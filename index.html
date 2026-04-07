@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas Exclusivas - Caça Descontos</title>
+    <meta name="description" content="Pegue os descontos mais absurdos antes de esgotar. Entre no nosso grupo exclusivo!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#FF5A00">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="announcement-bar">
+        <div class="ticker-content">
+            RESTAM POUCAS VAGAS NO GRUPO • GARANTA SEU LUGAR AGORA • ÚLTIMAS VAGAS DISPONÍVEIS • RESTAM POUCAS VAGAS NO GRUPO • GARANTA SEU LUGAR AGORA • ÚLTIMAS VAGAS DISPONÍVEIS
+        </div>
+    </div>
+
+    <!-- Notification Prompt (Shadcn-like) -->
+    <div class="notification-prompt">
+        <button id="notification-btn" class="notif-button" aria-label="Notificações">
+            <i data-lucide="bell" size="18"></i>
+            <span id="notif-count" class="notif-badge">3</span>
+        </button>
+        <div id="notifications-feed" class="notifications-feed"></div>
+    </div>
+    <div class="container">
+        <div class="content-box">
+            <!-- Logo -->
+            <img src="assets/logo.png" alt="Logo Caça Descontos" class="logo">
+            
+            <!-- Mascot Image -->
+            <img src="assets/mascote.png" alt="Mascote Caça Descontos" class="mascot-img" width="320" height="auto" loading="eager" decoding="async">
+            
+            <!-- HEADLINE -->
+            <h1 id="headline">Últimas vagas <br>no grupo <br>de ofertas</h1>
+
+            <!-- SUBHEADLINE -->
+            <p id="subheadline">Só quem está no grupo pega <br>os descontos mais absurdos <br>antes de esgotar!</p>
+
+            <!-- BOTÃO -->
+            <a href="https://chat.whatsapp.com/KTEuKReL2gkLJu1Iba1C0X?mode=gi_t" class="cta-button" id="cta-btn">
+                ENTRAR E ECONOMIZAR
+            </a>
+
+            <!-- SAFETY INFO -->
+            <div class="safety-info">
+                <span><i data-lucide="shield-check" size="14"></i> Grupo 100% Seguro</span>
+                <span><i data-lucide="lock" size="14"></i> Privacidade Protegida</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Inicializa os ícones do Lucide
+        lucide.createIcons();
+
+        // Lógica do componente de notificação
+        const notifBtn = document.getElementById('notification-btn');
+        const notifBadge = document.getElementById('notif-count');
+        
+        notifBtn.addEventListener('click', () => {
+            notifBadge.style.display = 'none';
+        });
+
+        // Configuração das Notificações Dinâmicas
+        const feed = document.getElementById('notifications-feed');
+        const names = ["João", "Maria", "Pedro", "Ana", "Carlos", "Juliana", "Marcos", "Beatriz", "Fernando", "Clara", "Rodrigo", "Camila"];
+        const actions = ["acabou de entrar no grupo!", "comprou um item com 70% OFF!", "pegou o cupom exclusivo!", "economizou R$ 120,00 agora!", "acabou de entrar no VIP!"];
+        const cities = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba", "Fortaleza", "Salvador", "Porto Alegre"];
+        const emojis = ["🔔", "✅", "🔥", "🚀", "💎", "💰", "🏷️"];
+
+        // Som de notificação estável (Pop/Click)
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+        
+        // Lógica para desbloquear o áudio no primeiro clique (Browsers policy)
+        let audioUnlocked = false;
+        document.addEventListener('click', () => {
+            if (!audioUnlocked) {
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audioUnlocked = true;
+                    console.log("Áudio desbloqueado!");
+                }).catch(e => console.log("Erro ao desbloquear áudio:", e));
+            }
+        }, { once: true });
+
+        function createNotification() {
+            const name = names[Math.floor(Math.random() * names.length)];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            const city = cities[Math.floor(Math.random() * cities.length)];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            const notification = document.createElement('div');
+            notification.className = 'notif-item';
+            notification.innerHTML = `
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="font-size: 1.2rem;">${emoji}</div>
+                    <div>
+                        <strong>${name} de ${city}</strong><br>
+                        <span>${action}</span>
+                    </div>
+                </div>
+            `;
+
+            // Toca o som apenas se estiver desbloqueado ou se puder tocar
+            if (audioUnlocked || true) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Áudio bloqueado pelo navegador até interação."));
+            }
+
+            // Máximo de 2 notificações
+            if (feed.children.length >= 2) {
+                const oldest = feed.children[0];
+                oldest.classList.add('fade-out');
+                setTimeout(() => {
+                    if (oldest.parentNode === feed) feed.removeChild(oldest);
+                }, 500);
+            }
+
+            feed.appendChild(notification);
+            
+            // Auto-remover após alguns segundos
+            setTimeout(() => {
+                if (notification.parentNode === feed) {
+                    notification.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (notification.parentNode === feed) feed.removeChild(notification);
+                    }, 500);
+                }
+            }, 6000);
+        }
+
+        // Inicia o ciclo de notificações (intervalo entre 3 a 7 segundos)
+        function startNotifs() {
+            createNotification();
+            setTimeout(startNotifs, 3000 + Math.random() * 4000);
+        }
+        
+        setTimeout(startNotifs, 2000);
+    </script>
+</body>
+</html>
